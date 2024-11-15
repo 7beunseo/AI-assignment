@@ -20,5 +20,5 @@ model = Sequential([
     Dense(len(class_names), activation='softmax')
 ])
 ```
-![img.png](img.png)
+![img_8.png](img_8.png)
 ![img_1.png](img_1.png)
