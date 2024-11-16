@@ -55,6 +55,22 @@ X_test, test_filenames = load_test_data(test_folder)
 # Split the data
 X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
 
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+
+# 데이터 증강
+datagen = ImageDataGenerator(
+    rotation_range=20,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    fill_mode='nearest'
+)
+
+datagen.fit(X_train)
+
 # Normalize values
 # 정규화 수행
 X_train = X_train / 255.0
@@ -78,6 +94,8 @@ print("y_test_split.shape:", y_test.shape)
 train_labels = keras.utils.to_categorical(y_train, 5)
 test_labels = keras.utils.to_categorical(y_test, 5)
 
+
+
 print('train_labels.shape (one-hot) =', train_labels.shape)
 print('test_labels.shape (one-hot) =', test_labels.shape)
 
@@ -86,6 +104,7 @@ print('test_labels.shape (one-hot) =', test_labels.shape)
 # train_images = X_train[:, :, :, np.newaxis] 데이터으 개수, 행 수, 열 수, 채널 수
 # test_images = X_test[:, :, :, np.newaxis]
 
+# CNN 모델 정의
 model = Sequential([
     Conv2D(32, (3, 3), activation='relu', input_shape=(128, 128, 3)),
     MaxPooling2D((2, 2)),
@@ -97,9 +116,9 @@ model = Sequential([
     MaxPooling2D((2, 2)),
 
     Flatten(),
-    Dense(1024, activation='relu'),
     Dense(512, activation='relu'),
-    Dense(512, activation='relu'),
+    Dropout(0.5),
+    Dense(256, activation='relu'),
     Dense(len(class_names), activation='softmax')
 ])
 
@@ -109,8 +128,10 @@ model.compile(optimizer='adam',\
              loss='categorical_crossentropy',
              metrics=['accuracy'])
 
-hist = model.fit(X_train, train_labels,
-                 epochs=10, validation_split=0.25)
+# 증강된 데이터를 사용한 학습
+hist = model.fit(datagen.flow(X_train, train_labels, batch_size=16),
+                 epochs=150, validation_data=(X_test, test_labels))
+
 
 plt.plot(hist.history['accuracy'], 'b-')
 plt.plot(hist.history['val_accuracy'], 'r--')
