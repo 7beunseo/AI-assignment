@@ -247,3 +247,26 @@ Epoch 100/100
 ![img_9.png](img_9.png)
 ![img_10.png](img_10.png)
 ![img_11.png](img_11.png)
+
+###  cnn v5
+```python
+# 증강된 데이터를 사용한 학습
+hist = model.fit(datagen.flow(X_train, train_labels, batch_size=16),
+                 epochs=150, validation_data=(X_test, test_labels))
+```
+* 에폭 증가 (100 -> 150)
+* 손실도 함께 출력하기 위해 출력 형태 변경 
+* 이전에 비해 정확도가 높아지지 않음 (다시 뒤로..)
+![img_12.png](img_12.png)
+![img_13.png](img_13.png)
+![img_14.png](img_14.png)
+```text
+Epoch 150/150
+138/138 ━━━━━━━━━━━━━━━━━━━━ 7s 49ms/step - accuracy: 0.8880 - loss: 0.2849 - val_accuracy: 0.8055 - val_loss: 0.8615
+18/18 - 0s - 17ms/step - accuracy: 0.8055 - loss: 0.8615
+테스트 정확도: 0.8054545521736145
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 63ms/step
+예측값 = [4 4 3 2 4 4 4 1 1 2 1 4 4 0 3 2 2 2 1 2 0 0 4 4 2]
+실제값 = [2 4 3 2 4 4 4 1 1 0 1 4 4 0 3 2 2 2 0 2 1 0 4 4 2]
+
+```

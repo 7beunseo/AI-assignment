@@ -130,11 +130,22 @@ model.compile(optimizer='adam',\
 
 # 증강된 데이터를 사용한 학습
 hist = model.fit(datagen.flow(X_train, train_labels, batch_size=16),
-                 epochs=150, validation_data=(X_test, test_labels))
+                 epochs=100, validation_data=(X_test, test_labels))
 
 
-plt.plot(hist.history['accuracy'], 'b-')
-plt.plot(hist.history['val_accuracy'], 'r--')
+# 학습 및 검증 정확도 그래프
+plt.plot(hist.history['accuracy'], 'b-', label='Train Accuracy')
+plt.plot(hist.history['val_accuracy'], 'r--', label='Validation Accuracy')
+
+# 학습 및 검증 손실 그래프
+plt.plot(hist.history['loss'], 'g-', label='Train Loss')
+plt.plot(hist.history['val_loss'], 'orange', label='Validation Loss')
+
+# 그래프 제목 및 범례 추가
+plt.title('Model Accuracy and Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy / Loss')
+plt.legend()
 plt.show()
 
 test_loss, test_acc = model.evaluate(X_test,  test_labels, verbose=2)
