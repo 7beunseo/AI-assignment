@@ -270,3 +270,128 @@ Epoch 150/150
 실제값 = [2 4 3 2 4 4 4 1 1 0 1 4 4 0 3 2 2 2 0 2 1 0 4 4 2]
 
 ```
+
+### ❗cnn v6 진행 중 에러 발생
+```python
+# CNN 모델 정의
+model = Sequential([
+    Conv2D(32, (3, 3), activation='relu', input_shape=(128, 128, 3)),
+    MaxPooling2D((2, 2)),
+
+    Conv2D(64, (3, 3), activation='relu'),
+    MaxPooling2D((2, 2)),
+
+    Conv2D(32, (3, 3), activation='relu'),
+    MaxPooling2D((2, 2)),
+
+    Conv2D(16, (3, 3), activation='relu'),
+    MaxPooling2D((2, 2)),
+
+    Conv2D(16, (3, 3), activation='relu'),
+        MaxPooling2D((2, 2)),
+
+    Conv2D(16, (3, 3), activation='relu'),
+        MaxPooling2D((2, 2)),
+
+
+    Flatten(),
+    Dense(256, activation='relu'),
+    Dropout(0.5),
+    Dense(256, activation='relu'),
+    Dense(128, activation='relu'),
+    Dense(len(class_names), activation='softmax')
+])
+```
+```text
+Negative dimension size caused by subtracting 3 from 2 for '{{node sequential_1/conv2d_5_1/convolution}} = Conv2D[T=DT_FLOAT, data_format="NHWC", dilations=[1, 1, 1, 1], explicit_paddings=[], padding="VALID", strides=[1, 1, 1, 1], use_cudnn_on_gpu=true](sequential_1/max_pooling2d_4_1/MaxPool2d, sequential_1/conv2d_5_1/convolution/ReadVariableOp)' with input shapes: [?,2,2,16], [3,3,16,16].
+```
+* Conv2D 레이어가 입력 텐서의 크기 (None, 2, 2, 16)을 받았는데, 커널 크기 (3, 3)를 사용하여 연산을 시도함. 여기서 2x2의 입력 크기에서 3x3 커널을 적용하려고 하려니까 입력 크기가 너무 작아서 차원이 음수로 계산되는 문제가 발생. Conv2D에서는 커널 크기와 스트라이드를 고려하여 출력 차원을 계산하는데, 입력이 너무 작으면 계산할 수 없게 된다.
+* 필터를 너무 과도하게 사용하지 않고, zero padding 사용해봄 
+* 효과는 거의 없음.. 오히려 정확도가 떨어짐 
+```python
+    Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=(128, 128, 3)),
+    MaxPooling2D((2, 2)),
+
+    Conv2D(64, (3, 3), activation='relu', padding='same'),
+    MaxPooling2D((2, 2)),
+
+    Conv2D(32, (3, 3), activation='relu', padding='same'),
+    MaxPooling2D((2, 2)),
+
+    Conv2D(16, (3, 3), activation='relu', padding='same'),
+    MaxPooling2D((2, 2)),
+```
+```text
+275/275 ━━━━━━━━━━━━━━━━━━━━ 8s 27ms/step - accuracy: 0.8573 - loss: 0.3986 - val_accuracy: 0.8036 - val_loss: 0.6092
+Epoch 100/100
+275/275 ━━━━━━━━━━━━━━━━━━━━ 7s 27ms/step - accuracy: 0.8466 - loss: 0.4020 - val_accuracy: 0.7964 - val_loss: 0.6205
+18/18 - 0s - 17ms/step - accuracy: 0.7964 - loss: 0.6205
+테스트 정확도: 0.7963636517524719
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 86ms/step
+예측값 = [4 4 3 2 4 4 4 1 1 0 1 4 4 0 3 2 2 2 0 2 1 0 4 4 2]
+실제값 = [2 4 3 2 4 4 4 1 1 0 1 4 4 0 3 2 2 2 0 2 1 0 4 4 2]
+
+```
+![img_15.png](img_15.png)
+![img_16.png](img_16.png)
+![img_17.png](img_17.png)
+
+### cnn v7
+* zero padding을 사용하는 김에 cp 반복을 추가해봄 
+```text
+Epoch 99/100
+275/275 ━━━━━━━━━━━━━━━━━━━━ 7s 25ms/step - accuracy: 0.8461 - loss: 0.4308 - val_accuracy: 0.7873 - val_loss: 0.6518
+Epoch 100/100
+275/275 ━━━━━━━━━━━━━━━━━━━━ 7s 26ms/step - accuracy: 0.8439 - loss: 0.4313 - val_accuracy: 0.7945 - val_loss: 0.7011
+18/18 - 0s - 16ms/step - accuracy: 0.7945 - loss: 0.7011
+테스트 정확도: 0.7945454716682434
+```
+* 그다지 좋지 못함.
+![img_18.png](img_18.png)
+![img_19.png](img_19.png)
+![img_20.png](img_20.png)
+
+* 이후 filter를 더 추가해 보니 오히려 더 정확도가 떨어짐 -> 필터 추가 금지..
+```text
+275/275 ━━━━━━━━━━━━━━━━━━━━ 7s 25ms/step - accuracy: 0.8161 - loss: 0.4733 - val_accuracy: 0.7745 - val_loss: 0.7448
+Epoch 100/100
+275/275 ━━━━━━━━━━━━━━━━━━━━ 7s 25ms/step - accuracy: 0.7906 - loss: 0.5144 - val_accuracy: 0.7727 - val_loss: 0.6550
+18/18 - 0s - 17ms/step - accuracy: 0.7727 - loss: 0.6550
+테스트 정확도: 0.7727272510528564
+```
+
+#  cnn v8
+```python
+# CNN 모델 정의
+model = Sequential([
+    Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=(128, 128, 3)),
+    MaxPooling2D((2, 2)),
+
+    Conv2D(64, (3, 3), activation='relu', padding='same'),
+    MaxPooling2D((2, 2)),
+
+    Conv2D(32, (3, 3), activation='relu', padding='same'),
+    MaxPooling2D((2, 2)),
+
+    Conv2D(16, (3, 3), activation='relu', padding='same'),
+    MaxPooling2D((2, 2)),
+
+
+    Flatten(),
+    Dense(512, activation='relu'), # 증가 
+    Dropout(0.5),
+    Dense(256, activation='relu'),
+    Dense(len(class_names), activation='softmax')
+])
+```
+* dense 증가시키고, zero padding 적용 
+* 정확도 상승!! 
+```275/275 ━━━━━━━━━━━━━━━━━━━━ 7s 25ms/step - accuracy: 0.8592 - loss: 0.3642 - val_accuracy: 0.7818 - val_loss: 0.7905
+Epoch 100/100
+275/275 ━━━━━━━━━━━━━━━━━━━━ 7s 25ms/step - accuracy: 0.8369 - loss: 0.4168 - val_accuracy: 0.8109 - val_loss: 0.7097
+18/18 - 0s - 16ms/step - accuracy: 0.8109 - loss: 0.7097
+테스트 정확도: 0.8109090924263
+```
+![img_21.png](img_21.png)
+![img_22.png](img_22.png)
+![img_23.png](img_23.png)
