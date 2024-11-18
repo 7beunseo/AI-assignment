@@ -49,22 +49,20 @@ print('test_labels.shape (one-hot) =', test_labels.shape)
 train_images, test_images = X_train / 255, X_test / 255
 
 
-model = keras.models.Sequential( [
-    keras.layers.Conv2D(input_shape = (32, 32, 3),
-                        kernel_size = (3,3), padding = 'same',
-                        filters = 32),
+model = keras.models.Sequential([
+    keras.layers.Conv2D(32, (3, 3), padding='same', activation='relu', input_shape=(32, 32, 3)),
     keras.layers.MaxPooling2D((2, 2)),
-    keras.layers.Conv2D(kernel_size = (3,3), padding ='same',
-                        filters = 64),
+
+    keras.layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
     keras.layers.MaxPooling2D((2, 2)),
-    keras.layers.Conv2D(kernel_size = (3,3), padding = 'same',
-                        filters = 32),
+
+    keras.layers.Conv2D(32, (3, 3), padding='same', activation='relu'),
     keras.layers.MaxPooling2D((2, 2)),
 
     keras.layers.Flatten(),
-    keras.layers.Dense(512, activation = 'relu'),
-    keras.layers.Dense(256, activation = 'relu'),
-    keras.layers.Dense(10, activation = 'softmax'),
+    keras.layers.Dense(512, activation='relu'),
+    keras.layers.Dropout(0.5),
+    keras.layers.Dense(10, activation='softmax')
 ])
 
 model.summary()
@@ -77,11 +75,15 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 hist = model.fit(train_images, train_labels,
-                 epochs=5, validation_split=0.25)
+                 epochs=20, validation_split=0.25)
 
-plt.plot(hist.history['accuracy'], 'b-')
-plt.plot(hist.history['val_accuracy'], 'r--')
+plt.plot(hist.history['accuracy'], 'b-', label='Training Accuracy')
+plt.plot(hist.history['val_accuracy'], 'r--', label='Validation Accuracy')
+plt.plot(hist.history['loss'], 'g-', label='Training Loss')  # 추가된 줄
+plt.plot(hist.history['val_loss'], 'y--', label='Validation Loss')  # 추가된 줄
+plt.legend()
 plt.show()
+
 
 test_loss, test_acc = model.evaluate(test_images,  test_labels, verbose=2)
 print('테스트 정확도:', test_acc)
