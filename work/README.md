@@ -1,3 +1,118 @@
+## cifar
+### cnn v1
+```python
+model = keras.models.Sequential( [
+    keras.layers.Conv2D(input_shape = (32, 32, 3),
+                        kernel_size = (3,3), padding = 'same',
+                        filters = 32),
+    keras.layers.MaxPooling2D((2, 2), strides=2),
+    keras.layers.Conv2D(kernel_size = (3,3), padding ='same',
+                        filters = 64),
+    keras.layers.MaxPooling2D((2, 2), strides=2),
+    keras.layers.Conv2D(kernel_size = (3,3), padding = 'same',
+                        filters = 32),
+    keras.layers.Flatten(),
+    keras.layers.Dense(128, activation = 'relu'),
+    keras.layers.Dense(32, activation = 'relu'),
+    keras.layers.Dense(10, activation = 'softmax'),
+])
+```
+* 정확도 낮음 
+![img_24.png](img_24.png)
+![img_25.png](img_25.png)
+![img_26.png](img_26.png)
+
+### cnn v2
+```python
+model = keras.models.Sequential( [
+    keras.layers.Conv2D(input_shape = (32, 32, 3),
+                        kernel_size = (3,3), padding = 'same',
+                        filters = 32),
+    keras.layers.MaxPooling2D((2, 2)Zz),
+    keras.layers.Conv2D(kernel_size = (3,3), padding ='same',
+                        filters = 64),
+    keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Conv2D(kernel_size = (3,3), padding = 'same',
+                        filters = 32),
+    keras.layers.MaxPooling2D((2, 2)),
+
+    keras.layers.Flatten(),
+    keras.layers.Dense(512, activation = 'relu'),
+    keras.layers.Dense(256, activation = 'relu'),
+    keras.layers.Dense(10, activation = 'softmax'),
+])
+```
+```text
+Epoch 8/10
+1172/1172 ━━━━━━━━━━━━━━━━━━━━ 7s 6ms/step - accuracy: 0.9312 - loss: 0.2042 - val_accuracy: 0.7017 - val_loss: 1.2690
+Epoch 9/10
+1172/1172 ━━━━━━━━━━━━━━━━━━━━ 8s 7ms/step - accuracy: 0.9399 - loss: 0.1688 - val_accuracy: 0.7053 - val_loss: 1.4147
+Epoch 10/10
+1172/1172 ━━━━━━━━━━━━━━━━━━━━ 8s 7ms/step - accuracy: 0.9528 - loss: 0.1421 - val_accuracy: 0.6979 - val_loss: 1.5618
+313/313 - 1s - 3ms/step - accuracy: 0.6944 - loss: 1.6019
+테스트 정확도: 0.6944000124931335
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 55ms/step
+```
+* 마찬가지로 정확도 매우 낮음 -> 과대적합 
+![img_27.png](img_27.png)
+![img_28.png](img_28.png)
+![img_29.png](img_29.png)
+
+
+### cnn v3
+```python
+# 데이터 증강
+datagen = ImageDataGenerator(
+    rotation_range=20,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    fill_mode='nearest'
+)
+
+datagen.fit(X_train)
+```
+```text
+1172/1172 ━━━━━━━━━━━━━━━━━━━━ 7s 6ms/step - accuracy: 0.9025 - loss: 0.2711 - val_accuracy: 0.6839 - val_loss: 1.2478
+Epoch 8/10
+1172/1172 ━━━━━━━━━━━━━━━━━━━━ 7s 6ms/step - accuracy: 0.9240 - loss: 0.2141 - val_accuracy: 0.7006 - val_loss: 1.2895
+Epoch 9/10
+1172/1172 ━━━━━━━━━━━━━━━━━━━━ 7s 6ms/step - accuracy: 0.9342 - loss: 0.1874 - val_accuracy: 0.6971 - val_loss: 1.3672
+Epoch 10/10
+1172/1172 ━━━━━━━━━━━━━━━━━━━━ 7s 6ms/step - accuracy: 0.9528 - loss: 0.1393 - val_accuracy: 0.6920 - val_loss: 1.5433
+313/313 - 1s - 3ms/step - accuracy: 0.6919 - loss: 1.5497
+```
+* 데이터 증강을 해도 Flowers와 다르게 과대적합이 나옴 
+* 에폭을 줄여볼까?
+![img_30.png](img_30.png)
+![img_31.png](img_31.png)
+
+### cnn v4
+```python
+hist = model.fit(train_images, train_labels,
+                 epochs=5, validation_split=0.25)
+```
+```text
+1172/1172 ━━━━━━━━━━━━━━━━━━━━ 7s 6ms/step - accuracy: 0.7355 - loss: 0.7567 - val_accuracy: 0.6927 - val_loss: 0.9081
+Epoch 4/5
+1172/1172 ━━━━━━━━━━━━━━━━━━━━ 7s 6ms/step - accuracy: 0.7892 - loss: 0.5953 - val_accuracy: 0.7006 - val_loss: 0.9072
+Epoch 5/5
+1172/1172 ━━━━━━━━━━━━━━━━━━━━ 7s 6ms/step - accuracy: 0.8448 - loss: 0.4502 - val_accuracy: 0.7071 - val_loss: 0.9531
+313/313 - 1s - 3ms/step - accuracy: 0.7033 - loss: 0.9512
+테스트 정확도: 0.7032999992370605
+```
+* 정확도 올라감!
+![img_33.png](img_33.png)
+![img_32.png](img_32.png)
+
+
+
+
+
+
+
 
 ## Flowers
 ### CNN v1
@@ -395,3 +510,39 @@ Epoch 100/100
 ![img_21.png](img_21.png)
 ![img_22.png](img_22.png)
 ![img_23.png](img_23.png)
+
+
+### cnn v9
+```python
+# CNN 모델 정의
+model = Sequential([
+    Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=(128, 128, 3)),
+    MaxPooling2D((2, 2)),
+
+    Conv2D(64, (3, 3), activation='relu', padding='same'),
+    MaxPooling2D((2, 2), strides=2),
+
+    Conv2D(32, (3, 3), activation='relu', padding='same'),
+    MaxPooling2D((2, 2), strides=2),
+
+    Conv2D(16, (3, 3), activation='relu', padding='same'),
+    MaxPooling2D((2, 2), strides=2),
+
+
+    Flatten(),
+    Dense(512, activation='relu'),
+    Dropout(0.5),
+    Dense(256, activation='relu'),
+    Dense(len(class_names), activation='softmax')
+])
+```
+* strieds를 늘려도 좋은 결과가 나오지 않음
+```text
+Epoch 99/100
+275/275 ━━━━━━━━━━━━━━━━━━━━ 6s 23ms/step - accuracy: 0.8587 - loss: 0.3619 - val_accuracy: 0.7982 - val_loss: 0.6727
+Epoch 100/100
+275/275 ━━━━━━━━━━━━━━━━━━━━ 6s 23ms/step - accuracy: 0.8495 - loss: 0.3830 - val_accuracy: 0.8055 - val_loss: 0.6928
+18/18 - 0s - 17ms/step - accuracy: 0.8055 - loss: 0.6928
+테스트 정확도: 0.8054545521736145
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 74ms/step
+```
