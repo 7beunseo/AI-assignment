@@ -107,6 +107,126 @@ Epoch 5/5
 ![img_33.png](img_33.png)
 ![img_32.png](img_32.png)
 
+### cnn v5
+```python
+model = keras.models.Sequential([
+    keras.layers.Conv2D(32, (3, 3), padding='same', activation='relu', input_shape=(32, 32, 3)),
+    keras.layers.MaxPooling2D((2, 2)),
+
+    keras.layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
+    keras.layers.MaxPooling2D((2, 2)),
+
+    keras.layers.Conv2D(32, (3, 3), padding='same', activation='relu'),
+    keras.layers.MaxPooling2D((2, 2)),
+
+    keras.layers.Flatten(),
+    keras.layers.Dense(512, activation='relu'),
+    keras.layers.Dropout(0.5),
+    keras.layers.Dense(10, activation='softmax')
+])
+```
+* 모델의 복잡도를 낮추고 에폭을 늘려봄 
+* dropout 추가 
+* 정확도 상승!! (대략 71%대였는데..)
+* 에폭을 늘려볼까?
+```text
+hist = model.fit(train_images, train_labels,
+                 epochs=10, validation_split=0.25)
+```
+![img_34.png](img_34.png)
+![img_35.png](img_35.png)
+
+### cnn v6
+hist = model.fit(train_images, train_labels,
+                 epochs=15, validation_split=0.25)
+```text
+Epoch 14/15
+1172/1172 ━━━━━━━━━━━━━━━━━━━━ 8s 7ms/step - accuracy: 0.8317 - loss: 0.4635 - val_accuracy: 0.7357 - val_loss: 0.8527
+Epoch 15/15
+1172/1172 ━━━━━━━━━━━━━━━━━━━━ 8s 7ms/step - accuracy: 0.8426 - loss: 0.4411 - val_accuracy: 0.7370 - val_loss: 0.8583
+313/313 - 3s - 11ms/step - accuracy: 0.7279 - loss: 0.8908
+테스트 정확도: 0.7279000282287598
+예측값 = [3 8 8 0 6 6 1 2 3 1 0 9 5 7 9 8 5 3 8 6 7 0 4 9 4]
+실제값 = [3 8 8 0 6 6 1 6 3 1 0 9 5 7 9 8 5 7 8 6 7 0 4 9 5]
+```
+![img_36.png](img_36.png)
+![img_37.png](img_37.png)
+
+++ 에폭 20으로 늘렸을 경우
+![img_38.png](img_38.png)
+![img_39.png](img_39.png)
+```text
+1172/1172 ━━━━━━━━━━━━━━━━━━━━ 8s 7ms/step - accuracy: 0.8720 - loss: 0.3581 - val_accuracy: 0.7386 - val_loss: 0.9195
+Epoch 20/20
+1172/1172 ━━━━━━━━━━━━━━━━━━━━ 8s 7ms/step - accuracy: 0.8809 - loss: 0.3380 - val_accuracy: 0.7349 - val_loss: 0.9647
+313/313 - 1s - 3ms/step - accuracy: 0.7334 - loss: 0.9835
+테스트 정확도: 0.7333999872207642
+```
+++ 에폭 25로 올릴 경우 정확도 낮아짐
+![img_40.png](img_40.png)
+```text
+1172/1172 ━━━━━━━━━━━━━━━━━━━━ 8s 7ms/step - accuracy: 0.8904 - loss: 0.2977 - val_accuracy: 0.7360 - val_loss: 1.0616
+313/313 - 1s - 3ms/step - accuracy: 0.7318 - loss: 1.0638
+테스트 정확도: 0.7318000197410583
+```
+
+
+~~* 모델을 단순화하고 에폭을 늘리는게 오히려 낫다?~~ 
+
+### cnn v7
+```python
+model = keras.models.Sequential([
+    keras.layers.Conv2D(32, (3, 3), padding='same', activation='relu', input_shape=(32, 32, 3)),
+    keras.layers.Conv2D(32, (3, 3), padding='same', activation='relu'),
+    keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    keras.layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
+    keras.layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
+    keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    keras.layers.Conv2D(128, (3, 3), padding='same', activation='relu'),
+    keras.layers.Conv2D(128, (3, 3), padding='same', activation='relu'),
+    keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    keras.layers.Conv2D(256, (3, 3), padding='same', activation='relu'),
+    keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    keras.layers.Flatten(),
+    keras.layers.Dense(128, activation='relu'),
+    keras.layers.Dropout(0.5),
+    keras.layers.Dense(10, activation='softmax')
+])
+
+hist = model.fit(train_images, train_labels, batch_size=256,
+                 epochs=250, validation_split=0.25)
+
+```
+```text
+Epoch 247/250
+147/147 ━━━━━━━━━━━━━━━━━━━━ 44s 302ms/step - accuracy: 0.9526 - loss: 0.1508 - val_accuracy: 0.8251 - val_loss: 0.7452
+Epoch 248/250
+147/147 ━━━━━━━━━━━━━━━━━━━━ 45s 305ms/step - accuracy: 0.9500 - loss: 0.1508 - val_accuracy: 0.8365 - val_loss: 0.6927
+Epoch 249/250
+147/147 ━━━━━━━━━━━━━━━━━━━━ 45s 307ms/step - accuracy: 0.9569 - loss: 0.1300 - val_accuracy: 0.8369 - val_loss: 0.7226
+Epoch 250/250
+147/147 ━━━━━━━━━━━━━━━━━━━━ 45s 308ms/step - accuracy: 0.9556 - loss: 0.1359 - val_accuracy: 0.8348 - val_loss: 0.7008
+313/313 - 7s - 22ms/step - accuracy: 0.8314 - loss: 0.7587
+테스트 정확도: 0.8313999772071838
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 201ms/step
+예측값 = [3 8 8 0 6 6 1 4 3 1 0 9 5 7 9 8 5 7 8 6 7 0 4 9 4]
+실제값 = [3 8 8 0 6 6 1 6 3 1 0 9 5 7 9 8 5 7 8 6 7 0 4 9 5]
+313/313 ━━━━━━━━━━━━━━━━━━━━ 7s 23ms/step
+예측값 = [3 8 8 ... 5 1 7]
+실제값 = [3 8 8 ... 5 1 7]
+```
+* 정확도 매우!  높아짐!!!!
+* 필터의 개수를 매우 늘려야 하나? 
+![img_41.png](img_41.png)
+![img_42.png](img_42.png)
 
 
 

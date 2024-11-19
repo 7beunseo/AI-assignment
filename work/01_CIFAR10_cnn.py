@@ -14,7 +14,7 @@ class_names = [
 
 # 데이터 증강
 datagen = ImageDataGenerator(
-    rotation_range=20,
+    rotation_range=30,
     width_shift_range=0.2,
     height_shift_range=0.2,
     shear_range=0.2,
@@ -51,16 +51,26 @@ train_images, test_images = X_train / 255, X_test / 255
 
 model = keras.models.Sequential([
     keras.layers.Conv2D(32, (3, 3), padding='same', activation='relu', input_shape=(32, 32, 3)),
-    keras.layers.MaxPooling2D((2, 2)),
-
-    keras.layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
-    keras.layers.MaxPooling2D((2, 2)),
-
     keras.layers.Conv2D(32, (3, 3), padding='same', activation='relu'),
     keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    keras.layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
+    keras.layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
+    keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    keras.layers.Conv2D(128, (3, 3), padding='same', activation='relu'),
+    keras.layers.Conv2D(128, (3, 3), padding='same', activation='relu'),
+    keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    keras.layers.Conv2D(256, (3, 3), padding='same', activation='relu'),
+    keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
 
     keras.layers.Flatten(),
-    keras.layers.Dense(512, activation='relu'),
+    keras.layers.Dense(128, activation='relu'),
     keras.layers.Dropout(0.5),
     keras.layers.Dense(10, activation='softmax')
 ])
@@ -74,8 +84,8 @@ model.compile(optimizer='adam',
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-hist = model.fit(train_images, train_labels,
-                 epochs=20, validation_split=0.25)
+hist = model.fit(train_images, train_labels, batch_size=256,
+                 epochs=250, validation_split=0.25)
 
 plt.plot(hist.history['accuracy'], 'b-', label='Training Accuracy')
 plt.plot(hist.history['val_accuracy'], 'r--', label='Validation Accuracy')
