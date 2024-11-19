@@ -106,23 +106,27 @@ print('test_labels.shape (one-hot) =', test_labels.shape)
 
 # CNN 모델 정의
 model = Sequential([
-    Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=(128, 128, 3)),
+    Conv2D(16, (5, 5), activation='relu', padding='same', input_shape=(128, 128, 3)),
     MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
 
-    Conv2D(64, (3, 3), activation='relu', padding='same'),
+    Conv2D(32, (5, 5), activation='relu', padding='same'),
     MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
 
-    Conv2D(32, (3, 3), activation='relu', padding='same'),
+    Conv2D(64, (5, 5), activation='relu', padding='same'),
     MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
 
-    Conv2D(16, (3, 3), activation='relu', padding='same'),
+    Conv2D(128, (5, 5), activation='relu', padding='same'),
     MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
 
 
     Flatten(),
     Dense(512, activation='relu'),
     Dropout(0.5),
-    Dense(256, activation='relu'),
+
     Dense(len(class_names), activation='softmax')
 ])
 
@@ -133,8 +137,8 @@ model.compile(optimizer='adam',\
              metrics=['accuracy'])
 
 # 증강된 데이터를 사용한 학습
-hist = model.fit(datagen.flow(X_train, train_labels, batch_size=8),
-                 epochs=100, validation_data=(X_test, test_labels))
+hist = model.fit(datagen.flow(X_train, train_labels, batch_size=256),
+                 epochs=150, validation_data=(X_test, test_labels))
 
 
 # 학습 및 검증 정확도 그래프

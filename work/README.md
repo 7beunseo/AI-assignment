@@ -666,3 +666,119 @@ Epoch 100/100
 테스트 정확도: 0.8054545521736145
 1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 74ms/step
 ```
+
+### cnn v10
+* cpcp를 늘려봄, 필터의ㅣ 개수 늘려봄
+* 에폭을 100으로 했는ㄴ데 더 늘려볼까? (그래프가 증가 추세)
+
+```python
+# CNN 모델 정의
+model = Sequential([
+    Conv2D(16, (3, 3), activation='relu', padding='same', input_shape=(128, 128, 3)),
+    MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    Conv2D(32, (3, 3), activation='relu', padding='same'),
+    MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    Conv2D(64, (3, 3), activation='relu', padding='same'),
+    MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    Conv2D(128, (3, 3), activation='relu', padding='same'),
+    MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    Conv2D(256, (3, 3), activation='relu', padding='same'),
+    MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    Flatten(),
+    Dense(512, activation='relu'),
+    Dropout(0.5),
+
+    Dense(len(class_names), activation='softmax')
+])
+
+# 증강된 데이터를 사용한 학습
+hist = model.fit(datagen.flow(X_train, train_labels, batch_size=256),
+                 epochs=100, validation_data=(X_test, test_labels))
+```
+```text
+9/9 ━━━━━━━━━━━━━━━━━━━━ 6s 617ms/step - accuracy: 0.8376 - loss: 0.4033 - val_accuracy: 0.7727 - val_loss: 0.7625
+Epoch 98/100
+9/9 ━━━━━━━━━━━━━━━━━━━━ 6s 654ms/step - accuracy: 0.8437 - loss: 0.3980 - val_accuracy: 0.7782 - val_loss: 0.6848
+Epoch 99/100
+9/9 ━━━━━━━━━━━━━━━━━━━━ 6s 614ms/step - accuracy: 0.8468 - loss: 0.4051 - val_accuracy: 0.7473 - val_loss: 0.7982
+Epoch 100/100
+9/9 ━━━━━━━━━━━━━━━━━━━━ 6s 623ms/step - accuracy: 0.8566 - loss: 0.3756 - val_accuracy: 0.7873 - val_loss: 0.7288
+18/18 - 0s - 14ms/step - accuracy: 0.7873 - loss: 0.7288
+테스트 정확도: 0.7872727513313293
+```
+![img_43.png](img_43.png)
+![img_44.png](img_44.png)
+
+
+### cnn v11
+```python
+# CNN 모델 정의
+model = Sequential([
+    Conv2D(16, (5, 5), activation='relu', padding='same', input_shape=(128, 128, 3)),
+    MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    Conv2D(32, (5, 5), activation='relu', padding='same'),
+    MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    Conv2D(64, (5, 5), activation='relu', padding='same'),
+    MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    Conv2D(128, (5, 5), activation='relu', padding='same'),
+    MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+
+    Flatten(),
+    Dense(512, activation='relu'),
+    Dropout(0.5),
+
+    Dense(len(class_names), activation='softmax')
+])
+
+hist = model.fit(datagen.flow(X_train, train_labels, batch_size=256),
+                 epochs=150, validation_data=(X_test, test_labels))
+```
+```text
+9/9 ━━━━━━━━━━━━━━━━━━━━ 17s 2s/step - accuracy: 0.8695 - loss: 0.3313 - val_accuracy: 0.8127 - val_loss: 0.6314
+Epoch 149/150
+9/9 ━━━━━━━━━━━━━━━━━━━━ 17s 2s/step - accuracy: 0.8676 - loss: 0.3468 - val_accuracy: 0.8182 - val_loss: 0.6930
+Epoch 150/150
+9/9 ━━━━━━━━━━━━━━━━━━━━ 15s 2s/step - accuracy: 0.8555 - loss: 0.3774 - val_accuracy: 0.8364 - val_loss: 0.5866
+18/18 - 0s - 24ms/step - accuracy: 0.8364 - loss: 0.5866
+테스트 정확도: 0.8363636136054993
+```
+* 이미지가 큼 -> 필터를 늘려봄
+* 정확도 83 달성!! 
+* 에폭을 더 늘려볼까? 
+![img_49.png](img_49.png)
+![img_50.png](img_50.png)
+
+![img_51.png](img_51.png)
+* 에폭을 늘렸더니 정확도 낮아짐. 
+* 과적합? 
+```text
+Epoch 200/200
+9/9 ━━━━━━━━━━━━━━━━━━━━ 13s 2s/step - accuracy: 0.9067 - loss: 0.2444 - val_accuracy: 0.8055 - val_loss: 0.6577
+18/18 - 0s - 22ms/step - accuracy: 0.8055 - loss: 0.6577
+테스트 정확도: 0.8054545521736145
+```
+
+
+
+#### 기타 다른 시도들..
+![img_45.png](img_45.png)
+![img_46.png](img_46.png)
+![img_47.png](img_47.png)
