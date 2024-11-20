@@ -297,9 +297,78 @@ Epoch 200/200
 ```
 * cp의 수를 줄임
 * 정확도 84% 
+* accuracy와 테스트 정확도 매우 유사 
 ![img_58.png](img_58.png)
 ![img_59.png](img_59.png)
 ![img_60.png](img_60.png)
+
+
+### cnn v9
+```python
+model = keras.models.Sequential([
+    keras.layers.Conv2D(32, (3, 3), padding='same', activation='relu', input_shape=(32, 32, 3)),
+    keras.layers.Conv2D(32, (3, 3), padding='same', activation='relu'),
+    keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    keras.layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
+    keras.layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
+    keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    keras.layers.Conv2D(128, (3, 3), padding='same', activation='relu'),
+    # keras.layers.Conv2D(128, (3, 3), padding='same', activation='relu'),
+    keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25), # 추가하기(과적합이라면)
+
+    # keras.layers.Conv2D(256, (3, 3), padding='same', activation='relu'),
+    # keras.layers.MaxPooling2D((2, 2)),
+    # keras.layers.Dropout(0.25),
+
+    keras.layers.Flatten(),
+    keras.layers.Dense(128, activation='relu'), # 32 추가하기 
+    keras.layers.Dropout(0.5),
+    keras.layers.Dense(32, activation='relu'),
+    keras.layers.Dropout(0.5),
+    keras.layers.Dense(10, activation='softmax')
+])
+```
+* 기록을 못 하고 실행해버려서, 대략 accuracy 85%, 정확도 82%
+* 과적합은 아니지만.. 위의 실행 결과와는 어긋남 
+
+
+
+![img_62.png](img_62.png)
+* 4개의 코랩 돌리기 시작..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -854,7 +923,8 @@ Epoch 200/200
 ![img_52.png](img_52.png)
 ![img_53.png](img_53.png)
 
-
+* 에폭을 170을 늘려도 정확도 80%
+![img_61.png](img_61.png)
 
 
 #### 기타 다른 시도들..
@@ -863,3 +933,12 @@ Epoch 200/200
 ![img_47.png](img_47.png)
 ![img_54.png](img_54.png)
 ![img_55.png](img_55.png)![img_56.png](img_56.png)
+![img_63.png](img_63.png)
+![img_64.png](img_64.png)
+
+
+https://velog.io/@yookyungkho/%EB%94%A5%EB%9F%AC%EB%8B%9D%EC%9D%98-%EA%B3%A0%EC%A7%88%EB%B3%91-Overfitting%EA%B3%BC%EC%A0%81%ED%95%A9-%ED%95%B4%EA%B2%B0-%ED%8C%81
+* 출력층 직전 은닉층의 노드 수를 줄여라.
+* 드롭아웃 비율은 경험적으로 판단할 일, 과적합이 심하지 않다면 0.2~0.5 사이를 추천하고 너무 심하다 싶으면 과감하게 0.8로 설정해보자.
+* batch_size 작은 데이터셋이라면 32가 적당
+* 이렇게 해봤는데 오히려 잘 안 됨 
