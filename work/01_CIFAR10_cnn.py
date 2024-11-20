@@ -14,7 +14,7 @@ class_names = [
 
 # 데이터 증강
 datagen = ImageDataGenerator(
-    rotation_range=30,
+    rotation_range=20,
     width_shift_range=0.2,
     height_shift_range=0.2,
     shear_range=0.2,
@@ -61,13 +61,13 @@ model = keras.models.Sequential([
     keras.layers.Dropout(0.25),
 
     keras.layers.Conv2D(128, (3, 3), padding='same', activation='relu'),
-    keras.layers.Conv2D(128, (3, 3), padding='same', activation='relu'),
+    # keras.layers.Conv2D(128, (3, 3), padding='same', activation='relu'),
     keras.layers.MaxPooling2D((2, 2)),
     keras.layers.Dropout(0.25),
 
-    keras.layers.Conv2D(256, (3, 3), padding='same', activation='relu'),
-    keras.layers.MaxPooling2D((2, 2)),
-    keras.layers.Dropout(0.25),
+    # keras.layers.Conv2D(256, (3, 3), padding='same', activation='relu'),
+    # keras.layers.MaxPooling2D((2, 2)),
+    # keras.layers.Dropout(0.25),
 
     keras.layers.Flatten(),
     keras.layers.Dense(128, activation='relu'),
@@ -77,15 +77,13 @@ model = keras.models.Sequential([
 
 model.summary()
 
-model.save('cifar10_cnn_model.h5')
-
 
 model.compile(optimizer='adam',
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 hist = model.fit(train_images, train_labels, batch_size=256,
-                 epochs=250, validation_split=0.25)
+                 epochs=200, validation_split=0.25)
 
 plt.plot(hist.history['accuracy'], 'b-', label='Training Accuracy')
 plt.plot(hist.history['val_accuracy'], 'r--', label='Validation Accuracy')

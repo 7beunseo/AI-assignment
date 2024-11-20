@@ -225,8 +225,82 @@ Epoch 250/250
 ```
 * 정확도 매우!  높아짐!!!!
 * 필터의 개수를 매우 늘려야 하나? 
+* 전반적으로 과적합이 됨 
 ![img_41.png](img_41.png)
 ![img_42.png](img_42.png)
+
+* 과적합을 없애기 위해 에폭 250 -> 200 시도 (flower와 동시에 진행하기 위해 colab에서 실행)
+* 정확도 큰 변화는 없음 
+![img_57.png](img_57.png)
+```text
+313/313 - 1s - 4ms/step - accuracy: 0.8254 - loss: 0.7411
+테스트 정확도: 0.8253999948501587
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 251ms/step
+예측값 = [3 8 8 8 6 6 9 6 3 1 0 9 5 7 9 6 5 7 8 6 7 0 4 9 4]
+실제값 = [3 8 8 0 6 6 1 6 3 1 0 9 5 7 9 8 5 7 8 6 7 0 4 9 5]
+313/313 ━━━━━━━━━━━━━━━━━━━━ 1s 3ms/step
+예측값 = [3 8 8 ... 5 1 7]
+실제값 = [3 8 8 ... 5 1 7]
+```
+
+### cnn v8
+```python
+model = keras.models.Sequential([
+    keras.layers.Conv2D(32, (3, 3), padding='same', activation='relu', input_shape=(32, 32, 3)),
+    keras.layers.Conv2D(32, (3, 3), padding='same', activation='relu'),
+    keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    keras.layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
+    keras.layers.Conv2D(64, (3, 3), padding='same', activation='relu'),
+    keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    keras.layers.Conv2D(128, (3, 3), padding='same', activation='relu'),
+    # keras.layers.Conv2D(128, (3, 3), padding='same', activation='relu'),
+    keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Dropout(0.25),
+
+    # keras.layers.Conv2D(256, (3, 3), padding='same', activation='relu'),
+    # keras.layers.MaxPooling2D((2, 2)),
+    # keras.layers.Dropout(0.25),
+
+    keras.layers.Flatten(),
+    keras.layers.Dense(128, activation='relu'),
+    keras.layers.Dropout(0.5),
+    keras.layers.Dense(10, activation='softmax')
+])
+```
+```text
+147/147 ━━━━━━━━━━━━━━━━━━━━ 3s 21ms/step - accuracy: 0.9123 - loss: 0.2501 - val_accuracy: 0.8372 - val_loss: 0.5692
+Epoch 194/200
+147/147 ━━━━━━━━━━━━━━━━━━━━ 5s 22ms/step - accuracy: 0.9066 - loss: 0.2653 - val_accuracy: 0.8388 - val_loss: 0.5604
+Epoch 195/200
+147/147 ━━━━━━━━━━━━━━━━━━━━ 3s 21ms/step - accuracy: 0.9121 - loss: 0.2496 - val_accuracy: 0.8369 - val_loss: 0.5686
+Epoch 196/200
+147/147 ━━━━━━━━━━━━━━━━━━━━ 5s 21ms/step - accuracy: 0.9144 - loss: 0.2446 - val_accuracy: 0.8378 - val_loss: 0.5540
+Epoch 197/200
+147/147 ━━━━━━━━━━━━━━━━━━━━ 5s 22ms/step - accuracy: 0.9120 - loss: 0.2511 - val_accuracy: 0.8349 - val_loss: 0.5608
+Epoch 198/200
+147/147 ━━━━━━━━━━━━━━━━━━━━ 5s 21ms/step - accuracy: 0.9126 - loss: 0.2494 - val_accuracy: 0.8314 - val_loss: 0.5865
+Epoch 199/200
+147/147 ━━━━━━━━━━━━━━━━━━━━ 3s 21ms/step - accuracy: 0.9124 - loss: 0.2521 - val_accuracy: 0.8353 - val_loss: 0.5831
+Epoch 200/200
+147/147 ━━━━━━━━━━━━━━━━━━━━ 3s 22ms/step - accuracy: 0.9151 - loss: 0.2464 - val_accuracy: 0.8380 - val_loss: 0.5534
+
+313/313 - 1s - 4ms/step - accuracy: 0.8408 - loss: 0.5592
+테스트 정확도: 0.8407999873161316
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 333ms/step
+예측값 = [3 8 8 0 6 6 1 6 3 1 0 9 5 7 9 8 5 7 8 6 7 0 4 9 4]
+실제값 = [3 8 8 0 6 6 1 6 3 1 0 9 5 7 9 8 5 7 8 6 7 0 4 9 5]
+313/313 ━━━━━━━━━━━━━━━━━━━━ 1s 2ms/step
+```
+* cp의 수를 줄임
+* 정확도 84% 
+![img_58.png](img_58.png)
+![img_59.png](img_59.png)
+![img_60.png](img_60.png)
+
 
 
 
@@ -761,7 +835,7 @@ Epoch 150/150
 테스트 정확도: 0.8363636136054993
 ```
 * 이미지가 큼 -> 필터를 늘려봄
-* 정확도 83 달성!! 
+* 정확도 83% 달성!! 
 * 에폭을 더 늘려볼까? 
 ![img_49.png](img_49.png)
 ![img_50.png](img_50.png)
@@ -775,6 +849,11 @@ Epoch 200/200
 18/18 - 0s - 22ms/step - accuracy: 0.8055 - loss: 0.6577
 테스트 정확도: 0.8054545521736145
 ```
+* 필터 크기를 대 -> 소로 진행했더니 0.7672727108001709 정확도 낮아짐 
+* 반대의 경우0.7981818318367004 높은 정확도는 아님 
+![img_52.png](img_52.png)
+![img_53.png](img_53.png)
+
 
 
 
@@ -782,3 +861,5 @@ Epoch 200/200
 ![img_45.png](img_45.png)
 ![img_46.png](img_46.png)
 ![img_47.png](img_47.png)
+![img_54.png](img_54.png)
+![img_55.png](img_55.png)![img_56.png](img_56.png)
